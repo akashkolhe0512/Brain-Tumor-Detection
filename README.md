@@ -1,34 +1,4 @@
 
-It must be:
-```md
-```
-```
-
----
-
-### 2️⃣ Project structure code block is broken
-You opened with triple backticks but closed with **four backticks**.
-
----
-
-### 3️⃣ Some shell code blocks are closed with ```` instead of ```
-
----
-
-## ✅ What is correct
-✔ Content  
-✔ Section order  
-✔ Technical accuracy  
-✔ Professional tone  
-✔ Ready for GitHub  
-
-So this is **purely a formatting fix**, not a rewrite.
-
----
-
-## ✅ FIXED & CORRECT `README.md` (copy–paste this)
-
-```md
 # 🧠 Brain Tumor Detection Using Deep Learning
 
 An AI-powered web application that analyzes brain MRI images to detect the presence of tumors and classify their type using deep learning.
@@ -76,17 +46,49 @@ The system allows users to upload an MRI image through a web interface. A traine
 
 ## 📂 Project Structure
 
-```
-├── app.py / main.py          # FastAPI backend
-├── index.html                # Frontend UI
-├── static/
-│   └── 237111.mp4            # Background video
-├── outputs_pytorch/
-│   └── best_model.pt         # Trained model checkpoint
-├── temp_uploads/             # Temporary uploaded images
-├── requirements.txt
-└── README.md
-```
+brain-tumor-detection/
+│
+├── app.py # FastAPI backend (model inference API)
+├── index.html # Frontend UI
+├── readme.md # Project documentation
+│
+├── notebooks/ # Model training & experiments
+│ ├── tumor.ipynb
+│ ├── tumor_pytorch.ipynb
+│ ├── loadModel.ipynb
+│
+├── artifacts/ # Training logs & metadata
+│ ├── manifest_merged.csv
+│ ├── manifest_raw.csv
+│ └── train_log_initial.csv
+│
+├── data_merged/ # MRI dataset
+│ ├── train/
+│ │ ├── glioma/
+│ │ ├── meningioma/
+│ │ ├── no_tumor/
+│ │ └── pituitary/
+│ │
+│ ├── val/
+│ │ ├── glioma/
+│ │ ├── meningioma/
+│ │ ├── no_tumor/
+│ │ └── pituitary/
+│ │
+│ └── test/
+│ ├── glioma/
+│ ├── meningioma/
+│ ├── no_tumor/
+│ └── pituitary/
+│
+├── outputs_pytorch/ # Trained models
+│ ├── best_model.pt
+│ └── model_scripted.pt
+│
+└── static/ # Frontend assets
+.   ├── 237111.mp4
+.   └── brain-interface.mp4
+
 
 ---
 
@@ -114,15 +116,11 @@ pip install fastapi uvicorn torch torchvision pillow python-multipart
 
 ## ▶️ Running the Application
 
-If your backend file is `app.py`:
+Run this command:
 ```bash
 uvicorn app:app --reload
 ```
 
-If your backend file is `main.py`:
-```bash
-uvicorn main:app --reload
-```
 
 Open your browser and visit:
 ```
@@ -175,12 +173,5 @@ http://127.0.0.1:8000
 **TeamDoctor** ❤️  
 Building intelligent healthcare solutions using AI.
 
----
 
-## 📜 License
 
-This project is licensed under the **MIT License**.  
-You are free to use, modify, and distribute it for educational purposes.
-```
-
----
