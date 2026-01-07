@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Background Test</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  #bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.7;
+  }
+  .container {
+    position: relative;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 30px;
+  }
+</style>
+</head>
+<body>
+
+<video id="bgVideo" autoplay muted loop playsinline>
+  <source src="brain-interface.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<div class="container">
+    <h1>🧠 Brain Tumor Detection</h1>
+
+    <div class="upload-section">
+        <h3>Select an MRI Image</h3>
+        <div class="file-input">
+            <input type="file" id="imageFile" accept="image/*"/>
+        </div>
+        <button id="submitBtn" onclick="predictTumor()">Analyze Image</button>
+    </div>
+
+    <div id="resultSection" class="result-section">
+        <div id="resultContent"></div>
+    </div>
+</div>
+
+</body>
+<footer>
+    Made By TeamDoctor ❤️
+</footer>
+
+<script>
+function predictTumor() {
+    const fileInput = document.getElementById('imageFile');
+    const submitBtn = document.getElementById('submitBtn');
+    const resultSection = document.getElementById('resultSection');
+    const resultContent = document.getElementById('resultContent');
+
+    if (!fileInput.files[0]) {
+        alert('Please upload an image first.');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Analyzing...';
+    resultSection.style.display = 'block';
+    resultContent.innerHTML = '<div class="loading">Processing image, please wait...</div>';
+    resultSection.className = 'result-section';
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/predict', { method: 'POST', body: formData })
+    .then(response => response.json())
+    .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze Image';
+        resultSection.style.display = 'block';
+
+        if (data.error) {
+            resultSection.className = 'result-section result-error';
+            resultContent.innerHTML = `<strong>Error:</strong> ${data.error}`;
+        } else {
+            resultSection.className = 'result-section result-success';
+            let html = `<h3>Prediction Result</h3>`;
+            const category = data.category.toLowerCase().replace(/_/g, ' ');
+            if (category === 'no tumor') {
+                html += `<p class="prediction">✔️ No tumor detected in the uploaded MRI image.</p>`;
+            } else {
+                html += `<p class="prediction">⚠️ Tumor detected in the MRI image.</p>
+                         <p class="confidence"><strong>Type of Tumor:</strong> ${data.category.replace(/_/g,' ')}</p>`;
+            }
+            resultContent.innerHTML = html;
+        }
+    })
+    .catch(error => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze Image';
+        resultSection.className = 'result-section result-error';
+        resultContent.innerHTML = `<strong>Error:</strong> Failed to process request: ${error.message}`;
+    });
+}
+
+document.getElementById('imageFile').addEventListener('change', function() {
+    if (this.files[0]) { document.getElementById('submitBtn').focus(); }
+});
+</script>
+</html>

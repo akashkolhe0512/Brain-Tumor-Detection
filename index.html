@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brain Tumor Detection</title>
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+  }
+
+  #bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.3;
+  }
+
+  .loading {
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+</style>
+</head>
+
+<body class="bg-black text-white">
+
+<!-- Background Video -->
+<video id="bgVideo" autoplay muted loop playsinline>
+  <source src="/static/237111.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+<!-- Main Wrapper -->
+<div class="relative z-10 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="text-center py-10">
+    <h1 class="text-4xl sm:text-5xl font-bold mb-3">
+      🧠 Brain Tumor Detection
+    </h1>
+    <p class="text-gray-200 max-w-2xl mx-auto">
+      AI-powered MRI analysis using deep learning to assist in brain tumor detection.
+    </p>
+  </header>
+
+  <!-- Content Section -->
+  <main class="flex-grow container mx-auto px-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+      <!-- LEFT: About Project -->
+      <div class="bg-black bg-opacity-60 backdrop-blur-lg p-6 rounded-xl shadow-2xl">
+        <h2 class="text-2xl font-semibold mb-4">About the Project</h2>
+
+        <p class="text-gray-200 mb-4 leading-relaxed">
+          This web application leverages <strong>Deep Learning</strong> and
+          <strong>Computer Vision</strong> techniques to analyze brain MRI images.
+          A trained neural network processes the uploaded scan and predicts
+          whether a brain tumor is present.
+        </p>
+
+        <h3 class="text-xl font-semibold mb-2">How It Works</h3>
+        <ul class="list-disc list-inside text-gray-200 mb-4 space-y-1">
+          <li>Upload a brain MRI image (JPG / PNG)</li>
+          <li>The image is resized and normalized</li>
+          <li>A CNN-based model analyzes the scan</li>
+          <li>The predicted tumor type is displayed</li>
+        </ul>
+
+        <h3 class="text-xl font-semibold mb-2">Why This Matters</h3>
+        <p class="text-gray-200 mb-4 leading-relaxed">
+          Early detection of brain tumors can support faster diagnosis
+          and improved treatment planning. This project demonstrates how
+          AI can assist medical professionals in decision-making.
+        </p>
+
+        <h3 class="text-xl font-semibold mb-2">Disclaimer</h3>
+        <p class="text-gray-300 text-sm leading-relaxed">
+          ⚠️ This system is intended for <strong>educational and research purposes only</strong>.
+          It is not a replacement for professional medical diagnosis.
+          Always consult a qualified healthcare provider.
+        </p>
+      </div>
+
+      <!-- RIGHT: Upload & Result -->
+      <div class="space-y-6">
+
+        <!-- Upload Card -->
+        <div class="bg-black bg-opacity-60 backdrop-blur-lg p-6 rounded-xl shadow-2xl">
+          <h2 class="text-2xl font-semibold mb-4 text-center">
+            Upload MRI Image
+          </h2>
+
+          <input
+            type="file"
+            id="imageFile"
+            accept="image/*"
+            class="w-full p-3 bg-white bg-opacity-10 text-white border-2 border-gray-600 rounded-lg focus:border-blue-400 transition-colors"
+          />
+
+          <button
+            id="submitBtn"
+            onclick="predictTumor()"
+            class="mt-4 w-full bg-gradient-to-r from-blue-500 to-blue-400 py-3 px-6 rounded-lg font-semibold text-lg hover:from-blue-600 hover:to-blue-500 hover:shadow-lg transform hover:-translate-y-1 transition-all disabled:bg-gray-500 disabled:cursor-not-allowed"
+          >
+            Analyze Image
+          </button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="resultSection" class="hidden p-6 rounded-xl shadow-2xl">
+          <div id="resultContent"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-300 opacity-90">
+    Made with ❤️ by TeamDoctor
+  </footer>
+
+</div>
+
+<!-- Script (LOGIC UNCHANGED) -->
+<script>
+function predictTumor() {
+    const fileInput = document.getElementById('imageFile');
+    const submitBtn = document.getElementById('submitBtn');
+    const resultSection = document.getElementById('resultSection');
+    const resultContent = document.getElementById('resultContent');
+
+    if (!fileInput.files[0]) {
+        alert('Please upload an image first.');
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Analyzing...';
+    resultSection.classList.remove('hidden');
+    resultSection.className =
+      'p-6 rounded-xl shadow-2xl bg-black bg-opacity-60 backdrop-blur-lg';
+    resultContent.innerHTML =
+      '<div class="loading text-blue-300 text-lg text-center">Processing image, please wait...</div>';
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+
+    fetch('/predict', { method: 'POST', body: formData })
+      .then(res => res.json())
+      .then(data => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze Image';
+
+        if (data.error) {
+          resultSection.className =
+            'p-6 rounded-xl shadow-2xl bg-red-500 bg-opacity-20 border-2 border-red-500';
+          resultContent.innerHTML =
+            `<strong>Error:</strong> ${data.error}`;
+        } else {
+          resultSection.className =
+            'p-6 rounded-xl shadow-2xl bg-green-500 bg-opacity-20 border-2 border-green-500';
+
+          const category = data.category.replace(/_/g, ' ');
+          resultContent.innerHTML = `
+            <h3 class="text-lg font-semibold mb-2">Prediction Result</h3>
+            <p class="text-lg">
+              ${category.toLowerCase() === 'no tumor'
+                ? '✔️ No tumor detected.'
+                : '⚠️ Tumor detected.'}
+            </p>
+            <p class="text-lg mt-1"><strong>Type:</strong> ${category}</p>
+            <p class="text-sm text-gray-200 mt-1">
+              Confidence: ${(data.confidence * 100).toFixed(2)}%
+            </p>
+          `;
+        }
+      })
+      .catch(err => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze Image';
+        resultSection.className =
+          'p-6 rounded-xl shadow-2xl bg-red-500 bg-opacity-20 border-2 border-red-500';
+        resultContent.innerHTML =
+          `<strong>Error:</strong> ${err.message}`;
+      });
+}
+</script>
+
+</body>
+</html>
