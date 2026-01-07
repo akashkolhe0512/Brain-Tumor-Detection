@@ -44,54 +44,6 @@ The system allows users to upload an MRI image through a web interface. A traine
 
 ---
 
-## 📂 Project Structure
-
-brain-tumor-detection/
-│
-├── app.py # FastAPI backend (model inference API)
-├── index.html # Frontend UI
-├── readme.md # Project documentation
-│
-├── notebooks/ # Model training & experiments
-│ ├── tumor.ipynb
-│ ├── tumor_pytorch.ipynb
-│ ├── loadModel.ipynb
-│
-├── artifacts/ # Training logs & metadata
-│ ├── manifest_merged.csv
-│ ├── manifest_raw.csv
-│ └── train_log_initial.csv
-│
-├── data_merged/ # MRI dataset
-│ ├── train/
-│ │ ├── glioma/
-│ │ ├── meningioma/
-│ │ ├── no_tumor/
-│ │ └── pituitary/
-│ │
-│ ├── val/
-│ │ ├── glioma/
-│ │ ├── meningioma/
-│ │ ├── no_tumor/
-│ │ └── pituitary/
-│ │
-│ └── test/
-│ ├── glioma/
-│ ├── meningioma/
-│ ├── no_tumor/
-│ └── pituitary/
-│
-├── outputs_pytorch/ # Trained models
-│ ├── best_model.pt
-│ └── model_scripted.pt
-│
-└── static/ # Frontend assets
-.   ├── 237111.mp4
-.   └── brain-interface.mp4
-
-
----
-
 ## ⚙️ Installation & Setup
 
 ### 1️⃣ Clone the repository
@@ -170,7 +122,7 @@ http://127.0.0.1:8000
 
 ## 👨‍⚕️ Team
 
-**TeamDoctor** ❤️  
+**TeamDuo** ❤️  
 Building intelligent healthcare solutions using AI.
 
 
